@@ -38,14 +38,17 @@ def recreate_ds_tree(api: sly.Api, src_project_id: int, dst_project_id: int):
     return input_datasets, output_datasets
 
 
-def process_dataset(api: sly.Api, src_ds: sly.DatasetInfo, dst_ds: sly.DatasetInfo):
+def process_dataset(api: sly.Api, src_ds: sly.DatasetInfo, dst_ds: sly.DatasetInfo, is_episode: bool = False):
     # * 1. Download Annotation
     temp_ds_dir_name = f"{src_ds.name}_{uuid4().hex}"
     temp_ds_dir = os.path.join(g.app_data, temp_ds_dir_name)
     sly.fs.mkdir(temp_ds_dir)
     hashs, names, metas = [], [], []
 
-    pointclouds = api.pointcloud_episode.get_list(src_ds.id)
+    if is_episode:
+        pointclouds = api.pointcloud_episode.get_list(src_ds.id)
+    else:
+        pointclouds = api.pointcloud.get_list(src_ds.id)
     tqdm = sly.tqdm_sly(
         desc=f"Processing dataset {src_ds.name}",
         total=len(pointclouds),
@@ -54,7 +57,10 @@ def process_dataset(api: sly.Api, src_ds: sly.DatasetInfo, dst_ds: sly.DatasetIn
         related_images_path = os.path.join(temp_ds_dir, pointcloud_info.name)
         sly.fs.mkdir(related_images_path)
         try:
-            related_images = api.pointcloud_episode.get_list_related_images(pointcloud_info.id)
+            if is_episode:
+                related_images = api.pointcloud_episode.get_list_related_images(pointcloud_info.id)
+            else:
+                related_images = api.pointcloud.get_list_related_images(pointcloud_info.id)
         except Exception as e:
             sly.logger.info(
                 "INFO FOR DEBUGGING",

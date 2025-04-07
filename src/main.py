@@ -28,10 +28,11 @@ def main():
     src_datasets, dst_datasets = f.recreate_ds_tree(g.api, src_project.id, dst_project.id)
 
     # * 3. Process each dataset
+    is_episodes = src_project.type == sly.ProjectType.POINT_CLOUD_EPISODES.value
     for src_ds_id, src_ds in src_datasets.items():
         dst_ds = dst_datasets[src_ds_id]
 
-        f.process_dataset(g.api, src_ds, dst_ds)
+        f.process_dataset(g.api, src_ds, dst_ds, is_episodes)
 
     # * 4. Set output project
     g.api.task.set_output_project(g.task_id, dst_project.id, dst_project.name)
