@@ -1,6 +1,6 @@
 <div align="center" markdown>
 
-# Copy Photo Context from Pointclouds to Images Project
+# Copy Photo Context from Point Clouds to Images Project
 
 <p align="center">
   <a href="#Overview">Overview</a> •
